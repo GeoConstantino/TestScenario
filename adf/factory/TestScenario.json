@@ -1,0 +1,9 @@
+{
+	"name": "TestScenario",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f80db80f-4b41-4c17-bfc9-5bcfcd3435a6",
+		"tenantId": "84ddc164-7dac-4fee-a413-3b323601efaf"
+	}
+}
