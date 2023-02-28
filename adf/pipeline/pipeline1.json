@@ -3,7 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "dataflow1",
+				"name": "DownloadWeatherInfoHistorical",
+				"description": "Using Open-Meteo API to download historical weather from the Netherlands",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -24,6 +25,34 @@
 						"computeType": "General"
 					},
 					"traceLevel": "Coarse"
+				}
+			},
+			{
+				"name": "Bronze-to-Silver",
+				"description": "Performe Bronze to Silver transformations",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "DownloadWeatherInfoHistorical",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.1:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/geoconstantino@hotmail.com/TestScenario-BronzeToSilver"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
