@@ -1,0 +1,46 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "RestResource1",
+						"type": "DatasetReference"
+					},
+					"name": "WeatherHistoricalData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "WeatherInfo",
+						"type": "DatasetReference"
+					},
+					"name": "outputstreamweatherinfo"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          body as (daily as (temperature_2m_max as double[], temperature_2m_min as double[], time as integer[]), daily_units as (temperature_2m_max as string, temperature_2m_min as string, time as string), elevation as double, generationtime_ms as double, hourly as (rain as double[], relativehumidity_2m as short[], snowfall as double[], temperature_2m as double[], time as integer[]), hourly_units as (rain as string, relativehumidity_2m as string, snowfall as string, temperature_2m as string, time as string), latitude as double, longitude as double, timezone as string, timezone_abbreviation as string, utc_offset_seconds as short),",
+				"          headers as [string,string]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 100,",
+				"     httpMethod: 'GET',",
+				"     timeout: 30,",
+				"     responseFormat: ['type' -> 'json', 'documentForm' -> 'singleDocument'],",
+				"     partitionBy('roundRobin', 2)) ~> WeatherHistoricalData",
+				"WeatherHistoricalData sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['weather-info'],",
+				"     umask: 0777,",
+				"     preCommands: [],",
+				"     postCommands: []) ~> outputstreamweatherinfo"
+			]
+		}
+	}
+}
