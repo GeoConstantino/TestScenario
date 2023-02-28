@@ -1,0 +1,12 @@
+{
+	"name": "RestService1",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://archive-api.open-meteo.com/v1/archive?latitude=52.25&longitude=5.75&start_date=2022-01-01&end_date=2023-02-22&hourly=temperature_2m,relativehumidity_2m,rain,snowfall&daily=temperature_2m_max,temperature_2m_min&timezone=auto&timeformat=unixtime",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
