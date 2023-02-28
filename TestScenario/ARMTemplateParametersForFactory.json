@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "TestScenario"
+		},
+		"ADLS2TestScenario_accountKey": {
+			"value": ""
+		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"RestService1_properties_typeProperties_url": {
+			"value": "https://archive-api.open-meteo.com/v1/archive?latitude=52.25&longitude=5.75&start_date=2022-01-01&end_date=2023-02-22&hourly=temperature_2m,relativehumidity_2m,rain,snowfall&daily=temperature_2m_max,temperature_2m_min&timezone=auto&timeformat=unixtime"
+		},
+		"ADLS2TestScenario_properties_typeProperties_url": {
+			"value": "https://eraneosdatalake.dfs.core.windows.net/"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0228-081842-lnz8onf8"
+		}
+	}
+}
