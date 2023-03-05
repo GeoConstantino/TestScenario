@@ -157,7 +157,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "business_tips",
-						"folderPath": "silver",
+						"folderPath": "silver/business_tips",
 						"fileSystem": "yelp"
 					},
 					"compressionCodec": "snappy"
@@ -215,7 +215,7 @@
 						}
 					},
 					{
-						"name": "bronze-to-silver-business_tips",
+						"name": "bronze-to-silver-business-tips",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
