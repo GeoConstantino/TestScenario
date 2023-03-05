@@ -108,6 +108,172 @@
 							"referenceName": "AzureDatabricks1",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "bronze-to-silver-engaged-users",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/yelp/bronze-to-silver/bronze-to-silver-engaged-users"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "bronze-to-silver-business_tips",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "yelp/bronze/yelp_academic_dataset_tip.json"
+							},
+							{
+								"name": "Destination",
+								"value": "yelp/silver/business_tips"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"parallelCopies": 1,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['user_id']"
+										},
+										"sink": {
+											"name": "user_id"
+										}
+									},
+									{
+										"source": {
+											"path": "$['business_id']"
+										},
+										"sink": {
+											"name": "business_id"
+										}
+									},
+									{
+										"source": {
+											"path": "$['text']"
+										},
+										"sink": {
+											"name": "text"
+										}
+									},
+									{
+										"source": {
+											"path": "$['date']"
+										},
+										"sink": {
+											"name": "date"
+										}
+									},
+									{
+										"source": {
+											"path": "$['compliment_count']"
+										},
+										"sink": {
+											"name": "compliment_count"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "yelp_bronze_business_tips",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Parquet_business_tips",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "bronze-to-silver-user-review",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/yelp/bronze-to-silver/bronze-to-silver-user-review"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "bronze-to-silver-checkin-count-business",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/yelp/bronze-to-silver/bronze-to-silver-checkin-count-business"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"policy": {
@@ -117,7 +283,134 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]",
+				"[concat(variables('factoryId'), '/datasets/yelp_bronze_business_tips')]",
+				"[concat(variables('factoryId'), '/datasets/Parquet_business_tips')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/yelp_bronze_business_tips')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS2TestScenario",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "yelp_academic_dataset_tip.json",
+						"folderPath": "bronze",
+						"fileSystem": "yelp"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"user_id": {
+							"type": "string"
+						},
+						"business_id": {
+							"type": "string"
+						},
+						"text": {
+							"type": "string"
+						},
+						"date": {
+							"type": "string"
+						},
+						"compliment_count": {
+							"type": "integer"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS2TestScenario')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricksDeltaLake_yelp_bronze_business_tips')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricksDeltaLake",
+				"typeProperties": {
+					"domain": "https://adb-2322224730091301.1.azuredatabricks.net",
+					"clusterId": "0228-081842-lnz8onf8",
+					"workspaceResourceId": "2322224730091301"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Parquet_business_tips')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS2TestScenario",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "business_tips",
+						"folderPath": "silver",
+						"fileSystem": "yelp"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS2TestScenario')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EveryDaysAt7AM')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Every day at 7AM until 10/03/2023",
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Yelp_Bronze_to_Silver",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-03-05T10:56:00Z",
+						"endTime": "2023-03-10T06:59:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								7
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Yelp_Bronze_to_Silver')]"
 			]
 		}
 	]
