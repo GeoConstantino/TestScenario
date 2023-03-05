@@ -1,0 +1,28 @@
+{
+	"name": "Yelp_Bronze_to_Silver",
+	"properties": {
+		"activities": [
+			{
+				"name": "bronze-to-silver-top-rated-business",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/yelp/bronze-to-silver/bronze-to-silver-top-rated-business"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
