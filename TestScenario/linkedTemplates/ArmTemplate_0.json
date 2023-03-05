@@ -15,10 +15,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
 		},
-		"RestService1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://archive-api.open-meteo.com/v1/archive?latitude=52.25&longitude=5.75&start_date=2022-01-01&end_date=2023-02-22&hourly=temperature_2m,relativehumidity_2m,rain,snowfall&daily=temperature_2m_max,temperature_2m_min&timezone=auto&timeformat=unixtime"
-		},
 		"ADLS2TestScenario_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://eraneosdatalake.dfs.core.windows.net/"
@@ -26,27 +22,16 @@
 		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "0228-081842-lnz8onf8"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://archive-api.open-meteo.com/v1/archive"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/RestService1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('RestService1_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ADLS2TestScenario')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -84,110 +69,29 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RestResource1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/RestService1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService1",
-					"type": "LinkedServiceReference"
-				},
 				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/RestService1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/WeatherInfo')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ADLS2TestScenario",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
+				"type": "RestService",
 				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "weather-info",
-						"folderPath": "weather",
-						"fileSystem": "bronze"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ADLS2TestScenario')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "RestResource1",
-								"type": "DatasetReference"
-							},
-							"name": "WeatherHistoricalData"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "WeatherInfo",
-								"type": "DatasetReference"
-							},
-							"name": "outputstreamweatherinfo"
-						}
-					],
-					"transformations": [],
-					"scriptLines": [
-						"source(output(",
-						"          body as (daily as (temperature_2m_max as double[], temperature_2m_min as double[], time as integer[]), daily_units as (temperature_2m_max as string, temperature_2m_min as string, time as string), elevation as double, generationtime_ms as double, hourly as (rain as double[], relativehumidity_2m as short[], snowfall as double[], temperature_2m as double[], time as integer[]), hourly_units as (rain as string, relativehumidity_2m as string, snowfall as string, temperature_2m as string, time as string), latitude as double, longitude as double, timezone as string, timezone_abbreviation as string, utc_offset_seconds as short),",
-						"          headers as [string,string]",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     limit: 100,",
-						"     httpMethod: 'GET',",
-						"     timeout: 30,",
-						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'singleDocument'],",
-						"     partitionBy('roundRobin', 2)) ~> WeatherHistoricalData",
-						"WeatherHistoricalData sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['weather-info'],",
-						"     umask: 0777,",
-						"     preCommands: [],",
-						"     postCommands: []) ~> outputstreamweatherinfo"
-					]
+					"url": "[parameters('RestService1_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/RestResource1')]",
-				"[concat(variables('factoryId'), '/datasets/WeatherInfo')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/Yelp_Bronze_to_Silver')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "DownloadWeatherInfoHistorical",
-						"description": "Using Open-Meteo API to download historical weather from the Netherlands",
-						"type": "ExecuteDataFlow",
+						"name": "bronze-to-silver-top-rated-business",
+						"type": "DatabricksNotebook",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -198,45 +102,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dataflow1",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"WeatherHistoricalData": {},
-									"outputstreamweatherinfo": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Coarse"
-						}
-					},
-					{
-						"name": "Bronze-to-Silver",
-						"description": "Performe Bronze to Silver transformations",
-						"type": "DatabricksNotebook",
-						"dependsOn": [
-							{
-								"activity": "DownloadWeatherInfoHistorical",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.1:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/Users/geoconstantino@hotmail.com/TestScenario-BronzeToSilver"
+							"notebookPath": "/yelp/bronze-to-silver/bronze-to-silver-top-rated-business"
 						},
 						"linkedServiceName": {
 							"referenceName": "AzureDatabricks1",
@@ -251,7 +117,6 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow1')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
 			]
 		}
