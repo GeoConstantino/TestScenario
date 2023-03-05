@@ -1,0 +1,21 @@
+{
+	"name": "Parquet_business_tips",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS2TestScenario",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "business_tips",
+				"folderPath": "silver",
+				"fileSystem": "yelp"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

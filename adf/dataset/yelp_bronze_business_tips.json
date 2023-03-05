@@ -1,0 +1,39 @@
+{
+	"name": "yelp_bronze_business_tips",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS2TestScenario",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "yelp_academic_dataset_tip.json",
+				"folderPath": "bronze",
+				"fileSystem": "yelp"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"user_id": {
+					"type": "string"
+				},
+				"business_id": {
+					"type": "string"
+				},
+				"text": {
+					"type": "string"
+				},
+				"date": {
+					"type": "string"
+				},
+				"compliment_count": {
+					"type": "integer"
+				}
+			}
+		}
+	}
+}
