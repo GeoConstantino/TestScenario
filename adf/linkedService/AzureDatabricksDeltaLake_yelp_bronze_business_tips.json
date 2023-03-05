@@ -1,0 +1,12 @@
+{
+	"name": "AzureDatabricksDeltaLake_yelp_bronze_business_tips",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricksDeltaLake",
+		"typeProperties": {
+			"domain": "https://adb-2322224730091301.1.azuredatabricks.net",
+			"clusterId": "0228-081842-lnz8onf8",
+			"workspaceResourceId": "2322224730091301"
+		}
+	}
+}
